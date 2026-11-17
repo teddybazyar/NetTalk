@@ -19,10 +19,12 @@ from collections import deque
 from flask import Flask, jsonify, send_from_directory
 from scapy.all import sniff, IP, TCP, UDP, DNS, DNSQR
 
-connections = {}              
-ip_to_name = {}               
-dns_queries = deque(maxlen=30)  
-lock = threading.Lock()       
+# Shared Data
+
+connections = {}             
+ip_to_name = {}              
+dns_queries = deque(maxlen=30) 
+lock = threading.Lock()      
 
 
 def get_my_ip():
@@ -39,7 +41,7 @@ MY_IP = get_my_ip()
 
 
 def reverse_lookup(ip):
-    """Ask the network for the name of this IP, and store it in ip_to_name."""
+    """DNS reverse lookup incase dns never answered"""
     try:
         name = socket.gethostbyaddr(ip)[0]
     except Exception:
@@ -51,7 +53,7 @@ def reverse_lookup(ip):
 # Packet handler
 
 def handle_packet(pkt):
-    if not pkt.haslayer(IP):          # ignore anything that isn't IPv4
+    if not pkt.haslayer(IP):        
         return
 
     with lock:
@@ -65,10 +67,10 @@ def handle_packet(pkt):
             try:
                 for i in range(pkt[DNS].ancount):
                     record = pkt[DNS].an[i]
-                    if record.type == 1:  
+                    if record.type == 1: 
                         ip_to_name[record.rdata] = record.rrname.decode().rstrip(".")
             except Exception:
-                pass 
+                pass  
 
         # 3) Outgoing traffic
         ip = pkt[IP]
@@ -91,7 +93,6 @@ def handle_packet(pkt):
 
 
 def start_sniffing():
-    # don't keep packets in memory (theyd pile up forever)
     sniff(prn=handle_packet, store=False)
 
 
@@ -122,15 +123,23 @@ def data():
     with lock:
         rows = [
             {"ip": ip, "name": ip_to_name.get(ip, ""), "port": port, "proto": proto,
-             "count": info["count"]}
+             "count": info["count"], "ago": int(time.time() - info["last"])}
             for (ip, port, proto), info in connections.items()
         ]
         rows.sort(key=lambda r: r["count"], reverse=True)  # busiest first
         return jsonify({"my_ip": MY_IP, "connections": rows[:40], "dns": list(dns_queries)})
 
 
+@app.route("/api/clear", methods=["POST"])
+def clear():
+    with lock:
+        connections.clear()
+        dns_queries.clear()
+    return jsonify({"ok": True})
+
+
 if __name__ == "__main__":
     # Sniff in a background thread so the web server can run at the same time
     threading.Thread(target=start_sniffing, daemon=True).start()
     print(f"Sniffing as {MY_IP} ... open http://127.0.0.1:5000")
-    app.run(host="127.0.0.1", port=5000)
+    app.run(host="127.0.0.1", port=5000) 

@@ -8,9 +8,26 @@
 </head>
 <body>
   <header>
-    <h1>&gt; who_is_my_computer_talking_to<span class="cursor">_</span></h1>
+    <h1>&gt; who_is_my_computer_talking_to?<span class="cursor">_</span></h1>
     <p id="status">connecting...</p>
   </header>
+
+  <details>
+    <summary>what am I looking at?</summary>
+    <ul>
+      <li><b>host</b>: the name of the server your computer contacted (a dash means no name was found).</li>
+      <li><b>ip</b>: that server's address on the internet.</li>
+      <li><b>port</b>: which "door" on the server was used. 443 is secure web traffic, 53 is DNS.</li>
+      <li><b>packets</b>: how many chunks of data were sent. Bigger means busier.</li>
+      <li class="odd-text">Amber rows use an uncommon port. That is only a hint to look closer, not proof of anything bad.</li>
+    </ul>
+  </details>
+
+  <div class="controls">
+    <input id="filter" type="text" placeholder="filter by host, ip or port..." aria-label="Filter connections">
+    <button id="pause" type="button">pause</button>
+    <button id="clear" type="button">clear</button>
+  </div>
 
   <main>
     <section>
@@ -18,7 +35,7 @@
       <div class="scroll">
         <table>
           <thead>
-            <tr><th>host</th><th>ip</th><th>port</th><th>packets</th></tr>
+            <tr><th>host</th><th>ip</th><th>port</th><th>packets</th><th>last seen</th></tr>
           </thead>
           <tbody id="connections"></tbody>
         </table>
