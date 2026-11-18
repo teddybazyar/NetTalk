@@ -4,27 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Who Is My Computer Talking To?</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <header>
-    <h1>&gt; who_is_my_computer_talking_to?<span class="cursor">_</span></h1>
+    <h1>&gt; who_is_my_computer_talking_to<span class="cursor">_</span></h1>
     <p id="status">connecting...</p>
   </header>
 
+  <!-- Collapsible help so beginners know what they are looking at -->
   <details>
     <summary>what am I looking at?</summary>
     <ul>
       <li><b>host</b>: the name of the server your computer contacted (a dash means no name was found).</li>
       <li><b>ip</b>: that server's address on the internet.</li>
       <li><b>port</b>: which "door" on the server was used. 443 is secure web traffic, 53 is DNS.</li>
+      <li><b>program</b>: the app on your computer that made the connection (blank if it could not be matched).</li>
+      <li><b>country / owner</b>: where the IP is registered and which company owns it. LAN means it is on your own network.</li>
       <li><b>packets</b>: how many chunks of data were sent. Bigger means busier.</li>
       <li class="odd-text">Amber rows use an uncommon port. That is only a hint to look closer, not proof of anything bad.</li>
+      <li><b>baseline mode</b>: press <b>learn</b> and use your computer normally for a few minutes. Then press <b>watch</b>. Anything new or unusual compared with what it learned shows up under alerts.</li>
     </ul>
   </details>
 
+  <!-- Controls: filter the tables, freeze the view, or start fresh -->
   <div class="controls">
-    <input id="filter" type="text" placeholder="filter by host, ip or port..." aria-label="Filter connections">
+    <input id="filter" type="text" placeholder="filter by host, ip, port, program, country or owner..." aria-label="Filter connections">
     <button id="pause" type="button">pause</button>
     <button id="clear" type="button">clear</button>
   </div>
@@ -35,9 +40,32 @@
       <div class="scroll">
         <table>
           <thead>
-            <tr><th>host</th><th>ip</th><th>port</th><th>packets</th><th>last seen</th></tr>
+            <tr>
+              <th>host</th><th>ip</th><th>port</th><th>program</th>
+              <th>country</th><th>owner</th><th>packets</th><th>last seen</th>
+            </tr>
           </thead>
           <tbody id="connections"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Baseline mode: learn what is normal, then watch for anything different -->
+    <section>
+      <h2>[ baseline mode ]</h2>
+      <p id="baseline-status" class="note">loading...</p>
+      <div class="controls">
+        <button id="learn" type="button">learn</button>
+        <button id="watch" type="button">watch</button>
+        <button id="baseline-off" type="button">off</button>
+      </div>
+      <p id="baseline-message" class="note" role="status"></p>
+      <div class="scroll short">
+        <table>
+          <thead>
+            <tr><th>time</th><th>level</th><th>what happened</th></tr>
+          </thead>
+          <tbody id="alerts"></tbody>
         </table>
       </div>
     </section>
@@ -55,6 +83,6 @@
     </section>
   </main>
 
-  <script src="app.js"></script>
+  <script src="/app.js"></script>
 </body>
 </html>

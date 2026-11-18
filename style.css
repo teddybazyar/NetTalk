@@ -1,13 +1,13 @@
+/* style.css - old-school terminal look: black background, green text */
+
 :root {
   --bg: #000;
   --green: #33ff33;
   --dim: #1a8f1a;
-  --amber: #ffb000; 
+  --amber: #ffb000;  /* old amber-monitor color, used for "look closer" rows */
 }
 
-* { 
-    box-sizing: border-box; 
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -21,32 +21,20 @@ body {
   );
 }
 
-h1 { 
-    margin: 0 0 6px;
-    font-size: 24px;
-    text-shadow: 0 0 8px var(--green); 
-}
-
-h2 {
-     margin: 28px 0 10px;
-      font-size: 16px;
-       font-weight: normal;
-        color: var(--dim);
-}
-
-#status {
-    margin: 0 0 14px;
-    color: var(--dim);
-}
+h1 { margin: 0 0 6px; font-size: 24px; text-shadow: 0 0 8px var(--green); }
+h2 { margin: 28px 0 10px; font-size: 16px; font-weight: normal; color: var(--dim); }
+#status { margin: 0 0 14px; color: var(--dim); }
 
 .cursor { animation: blink 1s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 
+/* Help box */
 details { margin-bottom: 14px; color: var(--dim); }
 summary { cursor: pointer; color: var(--green); }
 details ul { margin: 8px 0 0; padding-left: 20px; line-height: 1.6; }
 .odd-text { color: var(--amber); }
 
+/* Filter box and buttons */
 .controls { display: flex; flex-wrap: wrap; gap: 8px; }
 
 input, button {
@@ -61,6 +49,7 @@ input::placeholder { color: var(--dim); }
 button { cursor: pointer; }
 button:hover { background: #062406; }
 
+/* Clear keyboard focus so tabbing around is easy to follow */
 input:focus-visible, button:focus-visible, summary:focus-visible {
   outline: 2px solid var(--green);
   outline-offset: 2px;
@@ -73,7 +62,25 @@ th, td { padding: 6px 12px; text-align: left; border-bottom: 1px solid #0b3d0b; 
 th { position: sticky; top: 0; background: var(--bg); color: var(--dim); font-weight: normal; }
 tr:hover td { background: #062406; }
 
-tr.odd td { color: var(--amber); }   
+tr.odd td { color: var(--amber); }   /* uncommon port */
 td.empty { color: var(--dim); text-align: center; padding: 20px; }
 
 @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+
+/* ---- Added: baseline mode, alerts and wider tables ---- */
+:root { --red: #ff4d4d; }
+
+.note { margin: 0 0 10px; color: var(--dim); }
+
+/* The button for the current baseline mode stays lit */
+button.active { background: var(--green); color: var(--bg); }
+
+.scroll.short { max-height: 200px; margin-top: 12px; }
+
+/* Alert rows: info is quiet, warn is amber, alert is red */
+tr.a-info td { color: var(--dim); }
+tr.a-warn td { color: var(--amber); }
+tr.a-alert td { color: var(--red); }
+
+/* Keep long owner names and IPs from squeezing the other columns */
+td { white-space: nowrap; }
